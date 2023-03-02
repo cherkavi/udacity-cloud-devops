@@ -1,2 +1,1 @@
-# udacity-cloud-devops
-notices during making udacity course 
+# [udacity-cloud-devops](https://learn.udacity.com/my-programs?tab=Currently%2520Learning)
