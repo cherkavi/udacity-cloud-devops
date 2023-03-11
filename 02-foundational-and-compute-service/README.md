@@ -42,10 +42,28 @@ aws ec2 describe-instances --filter "Name=key-name,Values=cherkavi" "Name=instan
 
 ### ec2 connect
 ```sh
-ssh -i $AWS_KEY_PAIR  ubuntu@52.87.230.104
+ssh -i $AWS_KEY_PAIR  ubuntu@52.91.202.80
 ```
 
 ### ec2 stop
 ```sh
 aws ec2 terminate-instances --instance-ids i-0443c8f92bfe9fab4
+```
+
+## ebs - Elastic Block Storage
+### check volume
+```sh
+sudo file -s /dev/xvdf
+```
+### create filesystem on the volume
+```sh
+sudo mkfs -t xfs /dev/xvdf
+```
+
+### mount ebs to instance
+> To mount an attached EBS volume on every system reboot, add an entry for the device to the /etc/fstab 
+```sh
+sudo mkdir /external-ebs
+sudo mount /dev/xvdf /external-ebs
+cd /external-ebs
 ```
