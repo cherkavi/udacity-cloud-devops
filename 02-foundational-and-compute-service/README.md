@@ -1,18 +1,5 @@
 
 ## local settings for aws connection
-### aws credentials
-```sh
-vim ~/.aws/credentials
-```
-```sh
-AWS_PROFILE=cherkavi-udactity
-
-aws configure set ${AWS_PROFILE}.aws_access_key_id ...
-aws configure set ${AWS_PROFILE}.aws_secret_access_key = ...
-aws configure set ${AWS_PROFILE}.aws_session_token = ...
-
-aws configure list
-```
 
 ### aws console parameters
 ```sh
@@ -22,6 +9,29 @@ AWS_PROFILE=cherkavi-udactity
 AWS_REGION=us-east-1
 AWS_KEY_PAIR_NAME=cherkavi
 AWS_KEY_PAIR=$WORKING_DIR/key-pairs/${AWS_KEY_PAIR_NAME}.pem
+```
+
+### aws credentials
+```sh
+vim ~/.aws/credentials
+```
+```sh
+# aws cli version 2
+aws configure set aws_access_key_id ...
+aws configure set aws_secret_access_key ...
+aws configure set aws_session_token ...
+
+# aws cli version 1
+AWS_PROFILE=cherkavi-udactity
+aws configure set ${AWS_PROFILE}.aws_access_key_id ...
+aws configure set ${AWS_PROFILE}.aws_secret_access_key ...
+aws configure set ${AWS_PROFILE}.aws_session_token ...
+
+aws configure list
+
+# in case of having issue like:
+# An error occurred (UnauthorizedOperation) when calling the DescribeInstances operation: You are not authorized to perform this operation.
+# pls set proper AWS_REGION
 ```
 
 ## ec2 
@@ -66,4 +76,25 @@ sudo mkfs -t xfs /dev/xvdf
 sudo mkdir /external-ebs
 sudo mount /dev/xvdf /external-ebs
 cd /external-ebs
+```
+
+## s3 bucket
+```sh
+# list of buckets
+aws s3api list-buckets
+aws s3api list-buckets --query "Buckets[].Name"
+
+# create public bucket
+AWS_BUCKET_NAME="udacity-cherkavi-001"
+aws s3 mb s3://$AWS_BUCKET_NAME
+aws s3api create-bucket --bucket $AWS_BUCKET_NAME --acl public-read-write
+
+# remove bucket
+# aws s3 rb s3://$AWS_BUCKET_NAME
+
+FILE_NAME=README.md
+aws s3 cp $FILE_NAME s3://$AWS_BUCKET_NAME
+aws s3 rm s3://$AWS_BUCKET_NAME/$FILE_NAME
+
+aws s3 rm s3://$AWS_BUCKET_NAME --recursive --include "*"
 ```
