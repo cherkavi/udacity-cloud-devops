@@ -98,3 +98,65 @@ aws s3 rm s3://$AWS_BUCKET_NAME/$FILE_NAME
 
 aws s3 rm s3://$AWS_BUCKET_NAME --recursive --include "*"
 ```
+
+## dynamo db
+### create item 
+```
+TABLE_NAME=Music
+aws dynamodb put-item \
+--table-name $TABLE_NAME \
+--item '{"Artist_Id":{"S":"002"}, "Artist":{"S":"Black"} }' \
+--region=$AWS_REGION \
+--return-consumed-capacity TOTAL 
+```
+### select all records
+```sh
+aws dynamodb scan --table-name $TABLE_NAME
+
+aws dynamodb scan --table-name $TABLE_NAME \
+--filter-expression "Artist_Id = :id" \
+--expression-attribute-values '{":id":{"S":"001"}}'
+```
+### delete item 
+```sh
+aws dynamodb delete-item --table-name $TABLE_NAME --key '{"Artist_Id":{"S":"001"}}'
+```
+
+## rds
+### instances
+```sh
+
+# rds info
+aws rds describe-db-snapshots
+aws rds describe-db-clusters
+
+DB_NAME="database-1"
+
+aws rds describe-db-instances 
+aws rds describe-db-instances --db-instance-identifier $DB_NAME
+
+# query db
+# https://docs.aws.amazon.com/cli/latest/reference/rds-data/execute-sql.html
+
+```
+
+### rds select/query
+```sh
+DB_INSTANCE_ARN="arn:aws:rds:us-east-1:948919258198:db:database-1"
+DB_LOGIN=admin
+DB_PASSWORD=adminadmin
+DB_SECRET_NAME=$DB_NAME-secret
+DB_ADDRESS=`aws rds describe-db-instances --db-instance-identifier $DB_NAME --query 'DBInstances[*].Endpoint'  | jq .[].Address`
+# DB_ADDRESS='database-1.c3tv4dpkwvf1.us-east-1.rds.amazonaws.com'
+
+aws secretsmanager create-secret \
+    --name $DB_SECRET_NAME \
+    --secret-string "{\"engine\":\"mysql\",\"username\":\"$DB_LOGIN\",\"password\":\"$DB_PASSWORD\",\"dbname\":\"$DB_NAME\",\"port\": \"3306\",\"host\": $DB_ADDRESS}"
+
+# not working ???
+aws rds execute-sql ----db-cluster-or-instance-arn 
+ws rds-data execute-sql --aws-secret-store-arn $DB_INSTANCE_ARN --db-cluster-or-instance-arn  $DB_SECRET_ARN --sql-statements 'select * from dual;'
+
+# delete db instance 
+aws rds delete-db-instance --db-instance-identifier database-1
+```
