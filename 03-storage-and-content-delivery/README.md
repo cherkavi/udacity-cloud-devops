@@ -103,7 +103,7 @@ aws rds execute-sql ----db-cluster-or-instance-arn
 ws rds-data execute-sql --aws-secret-store-arn $DB_INSTANCE_ARN --db-cluster-or-instance-arn  $DB_SECRET_ARN --sql-statements 'show tables'
 ```
 
-## cloud front
+## cloud front distribution 
 ```sh
 # create bucket
 AWS_BUCKET_NAME=cherkavi-static-content
@@ -112,4 +112,10 @@ aws s3api create-bucket --bucket $AWS_BUCKET_NAME
 # upload simple file 
 FILE_NAME=index.html
 aws s3 cp $FILE_NAME s3://$AWS_BUCKET_NAME
+
+# remove all files
+aws s3 ls s3://$AWS_BUCKET_NAME
+aws s3 rm s3://$AWS_BUCKET_NAME  --recursive
+
+aws s3 rb s3://$AWS_BUCKET_NAME
 ```
