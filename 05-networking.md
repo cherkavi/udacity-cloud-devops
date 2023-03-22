@@ -4,4 +4,4 @@
 * private - without route to IGW
 
 ## autoscaling & load balancing
-![load balancing](https://drive.google.com/file/d/1-oQsTivqkXEuLibHvSYfq7gGXkXAJ5jx/view?usp=share_link)
+![load balancing](https://drive.google.com/uc?id=1-oQsTivqkXEuLibHvSYfq7gGXkXAJ5jx)

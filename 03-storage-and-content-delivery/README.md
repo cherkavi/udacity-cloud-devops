@@ -104,7 +104,7 @@ ws rds-data execute-sql --aws-secret-store-arn $DB_INSTANCE_ARN --db-cluster-or-
 ```
 
 ## cloud front distribution 
-![cloud front schema](https://drive.google.com/file/d/1cvgigF6j6ShFp5NIyWZ99pRgDLiFHtQ-/view?usp=share_link)
+![cloud front schema](https://drive.google.com/uc?id=1cvgigF6j6ShFp5NIyWZ99pRgDLiFHtQ-)
 ```sh
 # create bucket
 AWS_BUCKET_NAME=cherkavi-static-content
