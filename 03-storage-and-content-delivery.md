@@ -111,8 +111,8 @@ AWS_BUCKET_NAME=cherkavi-static-content
 aws s3api create-bucket --bucket $AWS_BUCKET_NAME
 
 # upload simple file 
-FILE_NAME=index.html
-aws s3 cp $FILE_NAME s3://$AWS_BUCKET_NAME
+FILE_NAME=files/s3-landing-page.html
+aws s3 cp $FILE_NAME s3://$AWS_BUCKET_NAME/index.html
 
 # remove all files
 aws s3 ls s3://$AWS_BUCKET_NAME
