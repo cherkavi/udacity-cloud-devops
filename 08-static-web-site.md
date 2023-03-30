@@ -188,3 +188,28 @@ aws cloudfront list-distributions | grep DomainName
 # aws cloudfront list-distributions | grep '"Id":'
 # aws cloudfront delete-distribution --id E6Q0X5NZY... --if-match E2ADZ1SMWE7...
 ```
+
+## remove resources
+```sh
+### cloudfront delete
+DISTRIBUTION_ID=`aws cloudfront list-distributions | jq -r ".DistributionList.Items[].Id"`
+echo $DISTRIBUTION_ID | clipboard
+aws cloudfront get-distribution --id $DISTRIBUTION_ID > $DISTRIBUTION_ID.cloud_front
+DISTRIBUTION_ETAG=`jq -r .ETag $DISTRIBUTION_ID.cloud_front`
+## disable distribution
+# fx $DISTRIBUTION_ID.cloud_front
+jq '.Distribution.DistributionConfig.Enabled = false' $DISTRIBUTION_ID.cloud_front |  jq '.Distribution.DistributionConfig' > $DISTRIBUTION_ID.cloud_front_updated 
+aws cloudfront update-distribution --id $DISTRIBUTION_ID --if-match $DISTRIBUTION_ETAG --distribution-config file://$DISTRIBUTION_ID.cloud_front_updated 
+## remove distribution
+aws cloudfront get-distribution --id $DISTRIBUTION_ID > $DISTRIBUTION_ID.cloud_front
+DISTRIBUTION_ETAG=`jq -r .ETag $DISTRIBUTION_ID.cloud_front`
+aws cloudfront delete-distribution --id $DISTRIBUTION_ID --if-match $DISTRIBUTION_ETAG
+
+### remove s3
+aws s3 ls
+AWS_BUCKET_NAME='cherkavi-bucket-for-static-web'
+aws s3 rm s3://$AWS_BUCKET_NAME --recursive --include "*"
+aws s3api delete-bucket --bucket $AWS_BUCKET_NAME
+```
+
+Arguments entered to CLI: ['cloudfront', 'get-distribution', '--id', '"E1JEBAMZQT60NX"', '--debug']
