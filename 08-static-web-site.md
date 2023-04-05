@@ -211,5 +211,3 @@ AWS_BUCKET_NAME='cherkavi-bucket-for-static-web'
 aws s3 rm s3://$AWS_BUCKET_NAME --recursive --include "*"
 aws s3api delete-bucket --bucket $AWS_BUCKET_NAME
 ```
-
-Arguments entered to CLI: ['cloudfront', 'get-distribution', '--id', '"E1JEBAMZQT60NX"', '--debug']
