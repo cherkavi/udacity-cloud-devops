@@ -60,6 +60,18 @@ ssh -i $AWS_KEY_PAIR  ubuntu@52.91.202.80
 aws ec2 terminate-instances --instance-ids i-0443c8f92bfe9fab4
 ```
 
+### ec2 run on nacked VPC
+* create VPC
+    * Enable DNS resolution
+    * Enable DNS hostnames
+* create internet gateway
+* internet gateway attach to vpc
+* vpc->route tables->edit routes->add route->0.0.0.0/0, internet gateway
+* create ec2, network->edit
+    * select public subnet
+    * auto-assign public IP
+    * security group with port 22
+
 ## ebs - Elastic Block Storage
 ### check volume
 ```sh
