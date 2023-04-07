@@ -19,10 +19,40 @@ aws cloudformation describe-stacks --stack-name $CLOUDFORMATION_STACK
 CLOUDFORMATION_STACK=udacity-apache-server
 # delete stack 
 aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region us-east-1
+
 # create stack
 aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region us-east-1 \
 --template-body file://files/cloudformation-vpc-igw-subnet-ec2.yaml \
 --parameters ParameterKey=VpcName,ParameterValue=cf-apache-server \
 --parameters ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 
+# update stack 
+aws cloudformation update-stack 
+```
+
+### parameters can be described as json file
+```sh
+ --parameters file://my-parameters.json
+```
+my-parameters.json
+```json
+[
+	{
+		"ParameterKey": "VpcName",
+		"ParameterValue": "cf-apache-server"
+	}, 
+	{
+		"ParameterKey": "Ec2KeyPairName",
+		"ParameterValue": "cherkavi"
+	}
+]
+```
+
+### ec2 security group another way of writing full output access
+```yaml
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: 0.0.0.0/0
 ```

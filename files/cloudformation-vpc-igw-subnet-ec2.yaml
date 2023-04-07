@@ -1,3 +1,7 @@
+Description: >
+    This template deploys a VPC, with public subnet, 
+    IGW, RouteTable, SecurityGroup, EC2
+
 Parameters:
   VpcName:
     Type: String
