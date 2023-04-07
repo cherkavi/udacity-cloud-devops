@@ -1,4 +1,3 @@
-
 ## local settings for aws connection
 
 ### aws console parameters

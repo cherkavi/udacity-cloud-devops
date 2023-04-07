@@ -1,4 +1,7 @@
 # cloudformation
+## links
+* [cloud formation templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
+  
 ## create vpc
 ```sh
 cat files/cloudformation-vpc.yaml
@@ -14,9 +17,12 @@ aws cloudformation describe-stacks --stack-name $CLOUDFORMATION_STACK
 ## create VPC IGW PublicSubnet EC2 with apache server
 ```sh
 CLOUDFORMATION_STACK=udacity-apache-server
+# delete stack 
 aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region us-east-1
+# create stack
 aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region us-east-1 \
 --template-body file://files/cloudformation-vpc-igw-subnet-ec2.yaml \
---parameters ParameterKey=VpcName,ParameterValue=cf-apache-server,ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
+--parameters ParameterKey=VpcName,ParameterValue=cf-apache-server \
+--parameters ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 
 ```

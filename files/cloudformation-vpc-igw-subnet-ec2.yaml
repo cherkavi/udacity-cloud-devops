@@ -65,34 +65,44 @@ Resources:
   Ec2SecurityGroup80:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow http to client host
-      VpcId: Ref: myVPC
+      GroupDescription: Allow http & ssh to client host
+      VpcId: !Ref VPC
       SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
+      - IpProtocol: -1
+        FromPort: -1
+        ToPort: -1
+        CidrIp: 0.0.0.0/0
 
   Ec2WithApache:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
       ImageId: ami-007855ac798b5175e
-      SecurityGroupIds: 
-      - !Ref Ec2SecurityGroup80
-      SubnetId: !Ref SubnetPublic
+      KeyName: cherkavi
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          GroupSet: 
+            - !Ref Ec2SecurityGroup80
+          SubnetId: 
+            !Ref SubnetPublic
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          sudo yum update -y
-          sudo yum install -y httpd
-          sudo systemctl start httpd
-          sudo systemctl enable httpd
+          sudo apt update
+          sudo apt install apache2 -y
+          sudo ufw allow 'Apache'
+          sudo systemctl start apache2
+
 
 Outputs:
   VpcId:
