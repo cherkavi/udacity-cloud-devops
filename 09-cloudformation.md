@@ -17,6 +17,6 @@ CLOUDFORMATION_STACK=udacity-apache-server
 aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region us-east-1
 aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region us-east-1 \
 --template-body file://files/cloudformation-vpc-igw-subnet-ec2.yaml \
---parameters ParameterKey=VpcName,ParameterValue=cf-apache-server
+--parameters ParameterKey=VpcName,ParameterValue=cf-apache-server,ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 
 ```

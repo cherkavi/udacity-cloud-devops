@@ -1,6 +1,15 @@
 Parameters:
   VpcName:
     Type: String
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9]*"
+    MinLength: 1
+    MaxLength: 16
+    Default: cherkavi
+    Description: prefix for all of elements in Stack
+  Ec2KeyPairName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access into the WordPress web server
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: cherkavi
 
 Resources: 
   VPC:
@@ -53,8 +62,42 @@ Resources:
       RouteTableId: !Ref RouteTable
       SubnetId: !Ref SubnetPublic
 
+  Ec2SecurityGroup80:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to client host
+      VpcId: Ref: myVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  Ec2WithApache:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-007855ac798b5175e
+      SecurityGroupIds: 
+      - !Ref Ec2SecurityGroup80
+      SubnetId: !Ref SubnetPublic
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo yum update -y
+          sudo yum install -y httpd
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
 
 Outputs:
   VpcId:
     Value: !Ref VPC
+    Description: id of created VPC
+  Ec2PublicIp:
+    Value: !Ref Ec2WithApache
     Description: id of created VPC
