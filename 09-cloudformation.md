@@ -15,7 +15,7 @@ aws cloudformation describe-stacks --stack-name $CLOUDFORMATION_STACK
 ```
 
 ## create VPC IGW PublicSubnet EC2 with apache server
-![cloudformation-vpc-igw-subnet-ec2](https://user-images.githubusercontent.com/8113355/230791443-82a56804-0239-4980-8bb1-9a7a80224491.png)
+![cloudformation-vpc-igw-subnet-ec2](https://user-images.githubusercontent.com/8113355/230791715-158046f5-8d08-465e-9389-18d3d1c46a0b.png)  
 ```sh
 CLOUDFORMATION_STACK=udacity-apache-server
 # delete stack 
