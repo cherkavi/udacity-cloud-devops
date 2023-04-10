@@ -1,7 +1,18 @@
 # cloudformation
 ## links
-* [cloud formation templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
-  
+* [cloud formation templates examples](https://github.com/orgs/aws-samples/repositories?q=cloudformation)
+  * [WordPress architecture](https://github.com/aws-samples/aws-refarch-wordpress)
+  * [private cloud to on-prem network](https://github.com/udacity/nd9991-c2-Infrastructure-as-Code-v1-Exercises_Solution/tree/master/lesson-2-Infrastructure%20as%20Code)
+* [cloud formation resources description](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
+
+## create stack from yaml
+```sh
+URL_TO_STACK=https://s3.amazonaws.com/aws-refarch/wordpress/latest/templates/aws-refarch-wordpress-master-newvpc.yaml
+STACK_NAME=WordPress
+
+x-www-browser https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=$STACK_NAME&templateURL=$URL_TO_STACK
+```  
+
 ## create vpc
 ```sh
 cat files/cloudformation-vpc.yaml
