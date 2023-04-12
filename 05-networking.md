@@ -1,4 +1,7 @@
 # networking
+## how it works
+![network](https://user-images.githubusercontent.com/8113355/231363237-ade170bb-8b4a-4110-8f47-f845b6e9c627.jpg)  
+
 ## subnets
 * public - with a "Route Table" that has a route to an InternetGateWay
 * private - without route to IGW
