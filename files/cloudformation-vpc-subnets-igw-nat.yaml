@@ -169,6 +169,7 @@ Outputs:
     Description: created public subnet
     Value: !Ref SubnetPublic
     Export:
+      # !ImportValue vpc-udacity-network-01-subnetpublic
       Name: !Sub "vpc-${VpcName}-subnetpublic"
 
   SubnetPrivate:
