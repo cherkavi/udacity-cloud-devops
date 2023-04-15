@@ -1,3 +1,5 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
 Description: >
     This template deploys a VPC, with public subnet, 
     IGW, RouteTable, SecurityGroup, EC2

@@ -33,10 +33,9 @@ CLOUDFORMATION_STACK=udacity-apache-server
 aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region us-east-1
 
 # create stack
-aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region us-east-1 \
+aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region us-east-1 --debug \
 --template-body file://files/cloudformation-vpc-igw-subnet-ec2.yaml \
---parameters ParameterKey=VpcName,ParameterValue=cf-apache-server \
---parameters ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
+--parameters ParameterKey=VpcName,ParameterValue=cf-apache-server  ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 
 # update stack 
 aws cloudformation update-stack 
@@ -60,11 +59,31 @@ my-parameters.json
 ]
 ```
 
-### ec2 security group another way of writing full output access
+### ec2 security group another way of writing full out access
 ```yaml
       SecurityGroupEgress:
       - IpProtocol: tcp
         FromPort: 0
         ToPort: 65535
         CidrIp: 0.0.0.0/0
+```
+
+create vpc,subnet,igw,nat
+```sh
+CLOUDFORMATION_STACK=udacity-network-01
+echo $CLOUDFORMATION_STACK
+REGION=us-east-1
+
+# create stack
+aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REGION --debug \
+--template-body file://files/cloudformation-vpc-subnets-igw-nat.yaml \
+--parameters ParameterKey=VpcName,ParameterValue=$CLOUDFORMATION_STACK \
+ ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
+ ParameterKey=SubnetPublicNetworkMask,ParameterValue=10.0.1.0/24 \
+ ParameterKey=SubnetPrivateNetworkMask,ParameterValue=10.0.2.0/24 \
+ ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
+
+# delete stack 
+aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REGION
+
 ```

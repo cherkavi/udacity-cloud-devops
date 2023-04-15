@@ -1,0 +1,178 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+    VPC, Public & Private Subnets, IGW & NAT.
+
+
+Parameters:
+
+  VpcName:
+    Type: String
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9\-]*'
+    MinLength: 1
+    MaxLength: 25
+    Default: cherkavi
+    Description: prefix for all of elements in Stack
+
+  VpcNetworkMask:
+    Type: String
+    AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
+    MinLength: 9
+    MaxLength: 20
+    Description: vpc network mask 
+
+  SubnetPublicNetworkMask:
+    Type: String
+    AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
+    MinLength: 9
+    MaxLength: 20
+    Description: vpc network mask 
+
+  SubnetPrivateNetworkMask:
+    Type: String
+    AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
+    MinLength: 9
+    MaxLength: 20
+    Description: vpc network mask 
+  
+  Ec2KeyPairName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access into the WordPress web server
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: cherkavi
+
+Resources:
+  ### VPC 
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: !Ref VpcNetworkMask
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value: !Ref VpcName
+
+  ### IGW
+  InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:   
+      - Key: "Name"
+        Value: !Sub '${VpcName}-IGW'
+  ## connection between IGW and VPC
+  BindingVpcAndIgw:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      VpcId: !Ref "VPC"
+      InternetGatewayId: !Ref "InternetGateway"
+
+  ### NAT
+  NAT:
+    Type: AWS::EC2::NatGateway
+    Properties:
+        AllocationId: !GetAtt EIP.AllocationId
+        SubnetId: !Ref SubnetPublic
+        Tags:
+        - Key: Name
+          Value: !Sub "${VPC}-NAT"
+  ## Elastic IP for NAT
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+        Tags:
+        - Key: Name
+          Value: !Sub "${VPC}-EIP"
+
+  ### Public Subnet 
+  ## MapPublicIpOnLaunch - true
+  SubnetPublic:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref SubnetPublicNetworkMask
+      AvailabilityZone: !Select 
+        - 0
+        - !GetAZs 
+          Ref: 'AWS::Region'
+      MapPublicIpOnLaunch: true
+      Tags:
+      - Key: Name
+        Value: !Sub '${VpcName}-subnet-public'
+
+  ### Private Subnet 
+  ## MapPublicIpOnLaunch - false
+  ## need NAT for accessing internet via GWT
+  SubnetPrivate:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref SubnetPrivateNetworkMask
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      MapPublicIpOnLaunch: false
+      Tags:
+      - Key: Name
+        Value: !Sub '${VpcName}-subnet-private'
+
+  ### Routetables
+  ## for public network
+  RouteTableSubnetPublic:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref "VPC"
+      Tags:
+      - Key: Name
+        Value: !Sub '${VpcName}-routetable-public'
+  # binding RouteTable with Subnet 
+  SubnetPublicRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref RouteTableSubnetPublic
+      SubnetId: !Ref SubnetPublic
+  # Route for RouteTable to IGW
+  InternetRoute:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref RouteTableSubnetPublic
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref InternetGateway
+
+  ## for private network
+  RouteTableSubnetPrivate:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref "VPC"
+      Tags:
+      - Key: Name
+        Value: !Sub '${VpcName}-routetable-private'
+  # binding RouteTable with Subnet 
+  SubnetPrivateRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref RouteTableSubnetPrivate
+      SubnetId: !Ref SubnetPrivate
+  # Route for RouteTable to NAT
+  NatRoute:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref RouteTableSubnetPrivate
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref NAT
+
+Outputs:
+  VPC:
+    Description: created vpc
+    Value: !Ref VPC
+    Export:
+      # !!! The Name field of Export must not depend on any resources,    
+      Name: !Sub "vpc-${VpcName}"
+
+  SubnetPublic:
+    Description: created public subnet
+    Value: !Ref SubnetPublic
+    Export:
+      Name: !Sub "vpc-${VpcName}-subnetpublic"
+
+  SubnetPrivate:
+    Description: created private subnet
+    Value: !Ref SubnetPrivate
+    Export:
+      Name: !Sub "vpc-${VpcName}-subnetprivate"
