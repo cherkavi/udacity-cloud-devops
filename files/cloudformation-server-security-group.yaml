@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+    This template deploys a EC2 with Security group & IAM
+    IGW, RouteTable, SecurityGroup, EC2
+
+Parameters:
+
+  Ec2KeyPairName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access into the WordPress web server
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: cherkavi
+
+  StackPrefix:
+    Description: unique prefix for exporting created elements in stack
+    Type: String
+
+
+Resources: 
+
+  Ec2RoleSSMManager:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+  
+  Ec2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref Ec2RoleSSMManager
+
+  Ec2SecurityGroup80:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http & ssh to client host
+      VpcId: !ImportValue vpc-udacity-network-01
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        FromPort: -1
+        ToPort: -1
+        CidrIp: 0.0.0.0/0
+
+  Ec2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-007855ac798b5175e
+      KeyName: !Ref Ec2KeyPairName
+      IamInstanceProfile: !Ref Ec2InstanceProfile
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: false
+          DeviceIndex: "0"
+          GroupSet: 
+            - !Ref Ec2SecurityGroup80
+          SubnetId: 
+            !ImportValue vpc-udacity-network-01-subnetpublic
+
+Outputs:
+  Ec2PublicInstance:
+    Value: !Ref Ec2
+    Export:
+      Name: !Sub "${StackPrefix}-EC2"
+    Description: created EC2

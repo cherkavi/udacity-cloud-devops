@@ -54,6 +54,11 @@ aws ec2 describe-instances --filter "Name=key-name,Values=cherkavi" "Name=instan
 ssh -i $AWS_KEY_PAIR  ubuntu@52.91.202.80
 ```
 
+### UserData script output in EC2/AutoScaling can be found
+```sh
+less /var/log/cloud-init-output.log
+```
+
 ### ec2 stop
 ```sh
 aws ec2 terminate-instances --instance-ids i-0443c8f92bfe9fab4

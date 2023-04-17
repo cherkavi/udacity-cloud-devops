@@ -68,15 +68,15 @@ my-parameters.json
         CidrIp: 0.0.0.0/0
 ```
 
-create vpc,subnet,igw,nat
+## create vpc,subnet,igw,nat
 ```sh
 CLOUDFORMATION_STACK=udacity-network-01
-echo $CLOUDFORMATION_STACK
 REGION=us-east-1
+CLOUDFORMATION_TEMPLATE=file://files/cloudformation-vpc-subnets-igw-nat.yaml
 
 # create stack
-aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REGION --debug \
---template-body file://files/cloudformation-vpc-subnets-igw-nat.yaml \
+aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REGION  \
+--template-body $CLOUDFORMATION_TEMPLATE \
 --parameters ParameterKey=VpcName,ParameterValue=$CLOUDFORMATION_STACK \
  ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
  ParameterKey=SubnetPublicNetworkMask,ParameterValue=10.0.1.0/24 \
@@ -85,5 +85,22 @@ aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REG
 
 # delete stack 
 aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REGION
+```
 
+## create ec2, securitygroup, iam role
+> next step after: file://files/cloudformation-vpc-subnets-igw-nat.yaml
+```sh
+CLOUDFORMATION_STACK=udacity-server-01
+REGION=us-east-1
+CLOUDFORMATION_TEMPLATE=file://files/cloudformation-server-security-group.yaml
+
+# create stack
+aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REGION  \
+--template-body $CLOUDFORMATION_TEMPLATE \
+--capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" \
+--parameters ParameterKey=StackPrefix,ParameterValue=$CLOUDFORMATION_STACK \
+ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
+
+# delete stack 
+aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REGION
 ```
