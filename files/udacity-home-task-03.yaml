@@ -5,15 +5,40 @@ Description: >
 
 Parameters: 
 
+  VpcName:
+    Type: String
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9\-]*'
+    MinLength: 1
+    MaxLength: 25
+    Default: udacity-task-03
+    Description: prefix for all of elements in Stack
+
+  VpcNetworkMask:
+    Type: String
+    AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
+    MinLength: 9
+    MaxLength: 20
+    Description: vpc network mask 
+
+  SubnetPublicNetworkMask:
+    Type: String
+    AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
+    MinLength: 9
+    MaxLength: 20
+    Description: vpc network mask 
+
+  SubnetPrivateNetworkMask:
+    Type: String
+    AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
+    MinLength: 9
+    MaxLength: 20
+    Description: vpc network mask 
+  
   Ec2KeyPairName:
-    Description: Name of an existing EC2 KeyPair to enable SSH access 
+    Description: Name of an existing EC2 KeyPair to enable SSH access
     Type: AWS::EC2::KeyPair::KeyName
     Default: cherkavi
 
-  StackPrefix:
-    Description: unique prefix for exporting created elements in stack
-    Type: String
-    Default: udacity-task-03
 
 Mappings:
   AMI2RegionMap:
