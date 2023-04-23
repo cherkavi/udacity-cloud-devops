@@ -79,8 +79,9 @@ aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REG
 --template-body $CLOUDFORMATION_TEMPLATE \
 --parameters ParameterKey=VpcName,ParameterValue=$CLOUDFORMATION_STACK \
  ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
- ParameterKey=SubnetPublicNetworkMask,ParameterValue=10.0.1.0/24 \
- ParameterKey=SubnetPrivateNetworkMask,ParameterValue=10.0.2.0/24 \
+ ParameterKey=SubnetPublicNetworkMask,ParameterValue=10.0.0.0/24 \
+ ParameterKey=SubnetPrivateNetworkMask1,ParameterValue=10.0.1.0/24 \
+ ParameterKey=SubnetPrivateNetworkMask2,ParameterValue=10.0.2.0/24 \
  ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 
 # delete stack 
@@ -103,4 +104,12 @@ ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 
 # delete stack 
 aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REGION
+```
+
+## Errors
+```
+Template format error: unsupported structure.
+```
+solution:
+> check format of --template-body file://file-in-current-folder.yaml
 ```

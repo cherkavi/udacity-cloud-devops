@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >
+  Diagram of current project: udacity-home-task-03.svg
+
+Parameters: 
+
+  Ec2KeyPairName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access 
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: cherkavi
+
+  StackPrefix:
+    Description: unique prefix for exporting created elements in stack
+    Type: String
+    Default: udacity-task-03
+
+Mappings:
+  AMI2RegionMap:
+    us-east-1: ami-0323c3dd2da7fb37d
+    us-west-2: ami-0a8e758f5e873b3c1
+    eu-west-1: ami-08935252a36e25f85
+    ap-northeast-1: ami-01e24be29428c15b2
+
+
+Resources: 
+  ### VPC 
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: !Ref VpcNetworkMask
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value: !Ref VpcName
+  SecurityGroupHttp:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to our load balancer
+      VpcId: 
+        Fn::ImportValue: 
+          !Sub "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+
+  SecurityGroupHttpJavaAndSsh:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to our hosts and SSH from local only
+      VpcId:
+        Fn::ImportValue:
+          !Sub "${EnvironmentName}-VPCID"
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 8080
+        ToPort: 8080
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: 0.0.0.0/0
+
+# ---------------------------------------------  
+  
+  WebAppLB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets:
+      - Fn::ImportValue: !Sub "${EnvironmentName}-PUB1-SN"
+      - Fn::ImportValue: !Sub "${EnvironmentName}-PUB2-SN"
+      SecurityGroups:
+      - Ref: LBSecGroup
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn:
+          Ref: WebAppTargetGroup
+      LoadBalancerArn:
+        Ref: WebAppLB
+      Port: '80'
+      Protocol: HTTP
+  ALBListenerRule:
+      Type: AWS::ElasticLoadBalancingV2::ListenerRule
+      Properties:
+        Actions:
+        - Type: forward
+          TargetGroupArn: !Ref 'WebAppTargetGroup'
+        Conditions:
+        - Field: path-pattern
+          Values: [/]
+        ListenerArn: !Ref 'Listener'
+        Priority: 1
+  WebAppTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 8
+      HealthyThresholdCount: 2
+      Port: 8080
+      Protocol: HTTP
+      UnhealthyThresholdCount: 5
+      VpcId: 
+        Fn::ImportValue:
+          Fn::Sub: "${EnvironmentName}-VPCID"
+
+
+# "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "AMI" ] }
+
+Outputs:
+  LogicalID:
+    Description: Information about the value
+    Value: !Sub "${Ec2}-EC2"
+    Export: 
+      Name: !Sub "${StackPrefix}-EC2"
+
+  Ec2PublicInstance:
+    Value: 
+    Export:
+      Name: 
+    Description: created EC2
+
+  # the public URL of the LoadBalancer , Bonus points: add http:// in front of it
