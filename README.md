@@ -25,6 +25,22 @@ aws rds describe-db-instances | jq -r '.DBInstances[].DBInstanceIdentifier'
 ```
 
 ## start working session
+bash automatisation 
+```sh
+function udacity(){
+    WORKING_DIR=$HOME_PROJECTS/udacity-cloud-devops
+ 
+    export AWS_PROFILE=cherkavi-udactity
+    export AWS_REGION=us-east-1
+    export AWS_DEFAULT_REGION=us-east-1
+    export AWS_KEY_PAIR_NAME=cherkavi
+    export AWS_KEY_PAIR=$WORKING_DIR/key-pairs/${AWS_KEY_PAIR_NAME}.pem
+    
+    pushd $WORKING_DIR
+}
+alias udacity-browser='open_url https://learn.udacity.com/my-programs?tab=Currently%2520Learning'
+```
+
 1. Launch Cloud Gateway, 
 2. select all text in "modal window"
 3. copy
