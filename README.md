@@ -74,6 +74,7 @@ git clone  https://github.com/udacity/nd9991-c2-Infrastructure-as-Code-v1  udaci
 ## Links
 * [architecture examples and diagrams](https://aws.amazon.com/architecture/)
 * [course materials](https://github.com/udacity/nd9991-c2-Infrastructure-as-Code-v1-Exercises_Solution)
+* [questions to mentor](https://knowledge.udacity.com/activity/questions)
 * draw tools
   * https://www.lucidcharts.com
   * https://online.visual-paradigm.com/
