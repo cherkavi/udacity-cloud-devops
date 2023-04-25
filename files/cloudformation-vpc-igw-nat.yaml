@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
     VPC, Public & Private Subnets, IGW & NAT.
-
+    Don't use quotas/doublequotas for Type !!!
 
 Parameters:
 
@@ -54,7 +54,7 @@ Parameters:
 Resources:
   ### VPC 
   VPC:
-    Type: 'AWS::EC2::VPC'
+    Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !Ref VpcNetworkMask
       EnableDnsHostnames: true
@@ -64,15 +64,15 @@ Resources:
 
   ### IGW
   InternetGateway:
-    Type: "AWS::EC2::InternetGateway"
+    Type: AWS::EC2::InternetGateway
     Properties:
       Tags:   
       - Key: "Name"
-        Value: !Sub '${VpcName}-igw'
+        Value: !Sub "${VpcName}-igw"
 
   ## connection between IGW and VPC
   VPC2IGW:
-    Type: "AWS::EC2::VPCGatewayAttachment"
+    Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref "VPC"
       InternetGatewayId: !Ref "InternetGateway"
@@ -90,7 +90,7 @@ Resources:
   ### Public Subnet 
   ## MapPublicIpOnLaunch - true
   SubnetPublic:
-    Type: "AWS::EC2::Subnet"
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       CidrBlock: !Ref SubnetPublicNetworkMask
@@ -101,24 +101,24 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
       - Key: Name
-        Value: !Sub '${VpcName}-subnet-public'
+        Value: !Sub "${VpcName}-subnet-public"
 
   ### NAT
-#  NAT:
-#    Type: AWS::EC2::NatGateway
-#    Properties:
-#      AllocationId: !GetAtt EIP.AllocationId
-#      SubnetId: !Ref SubnetPublic
-#      Tags:
-#      - Key: Name
-#        Value: !Sub "${VPC}-nat"
+  NAT:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt EIP.AllocationId
+      SubnetId: !Ref SubnetPublic
+      Tags:
+      - Key: Name
+        Value: !Sub "${VPC}-nat"
 
 
   ### Private Subnet 1
   ## MapPublicIpOnLaunch - false
   ## need NAT for accessing internet via GWT
   SubnetPrivate1:
-    Type: "AWS::EC2::Subnet"
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       CidrBlock: !Ref SubnetPrivateNetworkMask1
@@ -126,13 +126,13 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
       - Key: Name
-        Value: !Sub '${VpcName}-subnet-private-1'
+        Value: !Sub "${VpcName}-subnet-private-1"
 
   ### Private Subnet 2
   ## MapPublicIpOnLaunch - false
   ## need NAT for accessing internet via GWT
   SubnetPrivate2:
-    Type: "AWS::EC2::Subnet"
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       CidrBlock: !Ref SubnetPrivateNetworkMask2
@@ -140,75 +140,75 @@ Resources:
       MapPublicIpOnLaunch: false
       Tags:
       - Key: Name
-        Value: !Sub '${VpcName}-subnet-private-2'
+        Value: !Sub "${VpcName}-subnet-private-2"
 
 
   ### Routetables
   ## for public network
   RouteTablePublic:
-    Type: "AWS::EC2::RouteTable"
+    Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref "VPC"
       Tags:
       - Key: Name
-        Value: !Sub '${VpcName}-routetable-public'
+        Value: !Sub "${VpcName}-routetable-public"
   # binding RouteTable with Subnet 
   RT2SubNetPublic:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref RouteTablePublic
       SubnetId: !Ref SubnetPublic
   # Route for RouteTable, connect to IGW
   Route2Igw:
-    Type: "AWS::EC2::Route"
+    Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref RouteTablePublic
       DestinationCidrBlock: "0.0.0.0/0"
       GatewayId: !Ref InternetGateway
 
-  # ## for private sub-network-1
-  # RouteTableSubnetPrivate1:
-  #   Type: "AWS::EC2::RouteTable"
-  #   Properties:
-  #     VpcId: !Ref "VPC"
-  #     Tags:
-  #     - Key: Name
-  #       Value: !Sub '${VpcName}-routetable-private-1'
-  # # binding RouteTable with Subnet 
-  # RT2SubnetPrivate1:
-  #   Type: "AWS::EC2::SubnetRouteTableAssociation"
-  #   Properties:
-  #     RouteTableId: !Ref RouteTableSubnetPrivate1
-  #     SubnetId: !Ref SubnetPrivate1
-  # # Route for RouteTable to NAT
-  # Route2Nat4Private1:
-  #   Type: "AWS::EC2::Route"
-  #   Properties:
-  #     RouteTableId: !Ref RouteTableSubnetPrivate1
-  #     DestinationCidrBlock: "0.0.0.0/0"
-  #     NatGatewayId: !Ref NAT
+  ## for private sub-network-1
+  RouteTableSubnetPrivate1:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref "VPC"
+      Tags:
+      - Key: Name
+        Value: !Sub '${VpcName}-routetable-private-1'
+  # binding RouteTable with Subnet 
+  RT2SubnetPrivate1:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref RouteTableSubnetPrivate1
+      SubnetId: !Ref SubnetPrivate1
+ # Route for RouteTable to NAT
+  Route2Nat4Private1:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref RouteTableSubnetPrivate1
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref NAT
 
-  # ## for private sub-network-2
-  # RouteTableSubnetPrivate2:
-  #   Type: "AWS::EC2::RouteTable"
-  #   Properties:
-  #     VpcId: !Ref "VPC"
-  #     Tags:
-  #     - Key: Name
-  #       Value: !Sub '${VpcName}-routetable-private-2'
-  # # binding RouteTable with Subnet 
-  # RT2SubnetPrivate2:
-  #   Type: "AWS::EC2::SubnetRouteTableAssociation"
-  #   Properties:
-  #     RouteTableId: !Ref RouteTableSubnetPrivate2
-  #     SubnetId: !Ref SubnetPrivate2
-  # # Route for RouteTable to NAT
-  # Route2Nat4Private2:
-  #   Type: "AWS::EC2::Route"
-  #   Properties:
-  #     RouteTableId: !Ref RouteTableSubnetPrivate1
-  #     DestinationCidrBlock: "0.0.0.0/0"
-  #     NatGatewayId: !Ref NAT
+  ## for private sub-network-2
+  RouteTableSubnetPrivate2:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref "VPC"
+      Tags:
+      - Key: Name
+        Value: !Sub '${VpcName}-routetable-private-2'
+  # binding RouteTable with Subnet 
+  RT2SubnetPrivate2:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref RouteTableSubnetPrivate2
+      SubnetId: !Ref SubnetPrivate2
+  # Route for RouteTable to NAT
+  Route2Nat4Private2:
+    Type: "AWS::EC2::Route"
+    Properties:
+      RouteTableId: !Ref RouteTableSubnetPrivate2
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref NAT
 
 Outputs:
   VPC:
