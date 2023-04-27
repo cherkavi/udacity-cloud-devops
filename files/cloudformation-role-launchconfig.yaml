@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: >
+    Role and LaunchConfiguration for LoadBalancer
+    Don't use quotas/doublequotas for Type !!!
+
+Resources:
+
+  Ec2RoleS3:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Action:
+          - s3:Get*
+          - s3:List*
+          - s3-object-lambda:Get*
+          - s3-object-lambda:List*
+          Resource: "*"
+      Path: "/"
