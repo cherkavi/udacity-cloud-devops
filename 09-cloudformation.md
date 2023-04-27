@@ -88,6 +88,16 @@ aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REG
 aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REGION
 ```
 
+## create iam role and launchconfig 
+```sh
+CLOUDFORMATION_STACK=udacity-server-02
+REGION=us-east-1
+CLOUDFORMATION_TEMPLATE=file://files/cloudformation-role-launchconfig.yaml
+aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REGION --template-body $CLOUDFORMATION_TEMPLATE  --capabilities CAPABILITY_IAM
+
+aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REGION
+```
+
 ## create ec2, securitygroup, iam role
 > next step after: file://files/cloudformation-vpc-subnets-igw-nat.yaml
 ```sh
