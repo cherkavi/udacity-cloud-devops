@@ -5,6 +5,14 @@ Description: >
 
 Parameters:
 
+  VpcName:
+    Type: String
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9\-]*'
+    MinLength: 1
+    MaxLength: 25
+    Default: udacity-ht-03
+    Description: prefix for all of elements in Stack
+
   VpcNetworkMask:
     Type: String
     AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
@@ -45,7 +53,26 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow http
-      VpcId: !ImportValue vpc-udacity-network-01
+      # ----------------
+      # > Value of property VpcId must be of type String
+      # - Fn::ImportValue: "udacity-network-01"
+      # ----------------
+      # > Template format error: [/Resources/SecurityGroupOut80InAll/Properties/VpcId/0] map keys must be strings; received a map instead
+      # - !Ref Fn::ImportValue: "udacity-network-01"
+      # ----------------
+      # > Template format error: [/Resources/SecurityGroupOut80InAll/Properties/VpcId/0/Fn::GetAtt/0] map keys must be strings; received a map instead
+      # - Fn::GetAtt:
+      #   - !Ref Fn::ImportValue: "udacity-network-01"
+      #   - "Id"
+      # ---------------
+      # >  map keys must be strings; received a map instead
+      # - Fn::Select:
+      #   - 1
+      #   - !Ref Fn::ImportValue: "udacity-network-01"
+      VpcId:
+        - Fn::Select:
+          - 1
+          - !Ref Fn::ImportValue: "udacity-network-01"
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: 80
@@ -63,7 +90,10 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow http
-      VpcId: !ImportValue VpcName
+      VpcId:
+        - Fn::Select:
+          - 1
+          - !Ref Fn::ImportValue: "udacity-network-01"
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: 80

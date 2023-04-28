@@ -89,8 +89,14 @@ aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $AWS
 ```sh
 CLOUDFORMATION_STACK=udacity-permissions-02
 CLOUDFORMATION_TEMPLATE=file://files/cloudformation-role-launchconfig.yaml
+
+# validate cloud formation stack 
+aws cloudformation validate-template --template-body $CLOUDFORMATION_TEMPLATE
+
+cloudformation-delete
 aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION \
---parameters ParameterKey=VpcName,ParameterValue=$CLOUDFORMATION_STACK \
+--debug \
+--parameters ParameterKey=VpcName,ParameterValue=udacity-network-01 \
 ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
 --template-body $CLOUDFORMATION_TEMPLATE --capabilities CAPABILITY_NAMED_IAM
 ```
