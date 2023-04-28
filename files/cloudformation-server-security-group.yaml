@@ -42,7 +42,7 @@ Resources:
   Ec2SecurityGroup80:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Allow http & ssh to client host
+      GroupDescription: Allow http
       VpcId: !ImportValue vpc-udacity-network-01
       SecurityGroupIngress:
       - IpProtocol: tcp

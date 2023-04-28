@@ -25,20 +25,22 @@ aws rds describe-db-instances | jq -r '.DBInstances[].DBInstanceIdentifier'
 ```
 
 ## start working session
-bash automatisation 
+bash automatization 
 ```sh
-function udacity(){
-    WORKING_DIR=$HOME_PROJECTS/udacity-cloud-devops
- 
-    export AWS_PROFILE=cherkavi-udactity
-    export AWS_REGION=us-east-1
-    export AWS_DEFAULT_REGION=us-east-1
-    export AWS_KEY_PAIR_NAME=cherkavi
-    export AWS_KEY_PAIR=$WORKING_DIR/key-pairs/${AWS_KEY_PAIR_NAME}.pem
-    
-    pushd $WORKING_DIR
-}
+WORKING_DIR=$HOME_PROJECTS/udacity-cloud-devops
+export AWS_PROFILE=cherkavi-udactity
+export AWS_REGION=us-east-1
+export AWS_DEFAULT_REGION=us-east-1
+export AWS_KEY_PAIR_NAME=cherkavi
+export AWS_KEY_PAIR=$WORKING_DIR/key-pairs/${AWS_KEY_PAIR_NAME}.pem
+pushd $WORKING_DIR
+
 alias udacity-browser='open_url https://learn.udacity.com/my-programs?tab=Currently%2520Learning'
+
+alias cloudformation-list="aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE --query 'StackSummaries[].StackName'"
+function cloudformation-delete(){ 
+    aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION 
+}
 ```
 
 1. Launch Cloud Gateway, 

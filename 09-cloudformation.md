@@ -68,14 +68,14 @@ my-parameters.json
         CidrIp: 0.0.0.0/0
 ```
 
-## create vpc,subnet,igw,nat
+## High load application
+[online diagram of solution](https://online.visual-paradigm.com/w/xqyroxcb/diagrams/#diagram:workspace=xqyroxcb&proj=2&id=33)
+
+### create vpc,subnet,igw,nat
 ```sh
 CLOUDFORMATION_STACK=udacity-network-01
-REGION=us-east-1
-CLOUDFORMATION_TEMPLATE=file://files/cloudformation-vpc-subnets-igw-nat.yaml
-
-# create stack
-aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REGION  \
+CLOUDFORMATION_TEMPLATE=file://files/cloudformation-vpc-igw-nat.yaml
+aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION  \
 --template-body $CLOUDFORMATION_TEMPLATE \
 --parameters ParameterKey=VpcName,ParameterValue=$CLOUDFORMATION_STACK \
  ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
@@ -83,37 +83,28 @@ aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REG
  ParameterKey=SubnetPrivateNetworkMask1,ParameterValue=10.0.1.0/24 \
  ParameterKey=SubnetPrivateNetworkMask2,ParameterValue=10.0.2.0/24 \
  ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
-
-# delete stack 
-aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REGION
 ```
 
-## create iam role and launchconfig 
+### create iam role, security group
 ```sh
-CLOUDFORMATION_STACK=udacity-server-02
-REGION=us-east-1
+CLOUDFORMATION_STACK=udacity-permissions-02
 CLOUDFORMATION_TEMPLATE=file://files/cloudformation-role-launchconfig.yaml
-aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REGION --template-body $CLOUDFORMATION_TEMPLATE  --capabilities CAPABILITY_IAM
-
-aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REGION
+aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION \
+--parameters ParameterKey=VpcName,ParameterValue=$CLOUDFORMATION_STACK \
+ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
+--template-body $CLOUDFORMATION_TEMPLATE --capabilities CAPABILITY_NAMED_IAM
 ```
 
-## create ec2, securitygroup, iam role
+### create ec2
 > next step after: file://files/cloudformation-vpc-subnets-igw-nat.yaml
 ```sh
 CLOUDFORMATION_STACK=udacity-server-01
-REGION=us-east-1
 CLOUDFORMATION_TEMPLATE=file://files/cloudformation-server-security-group.yaml
-
-# create stack
 aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REGION  \
 --template-body $CLOUDFORMATION_TEMPLATE \
 --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" \
 --parameters ParameterKey=StackPrefix,ParameterValue=$CLOUDFORMATION_STACK \
 ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
-
-# delete stack 
-aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REGION
 ```
 
 ## Errors
@@ -121,5 +112,6 @@ aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $REG
 Template format error: unsupported structure.
 ```
 solution:
-> check format of --template-body file://file-in-current-folder.yaml
+> check format of path to file, for example:
+> --template-body file://file-in-current-folder.yaml
 ```

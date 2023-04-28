@@ -1,8 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
-    VPC, Public & Private Subnets, IGW & NAT.
-    Don't use quotas/doublequotas for Type !!!
+    VPC, Public & Private Subnets, IGW & NAT.    
 
 Parameters:
 
@@ -51,6 +50,7 @@ Parameters:
     Type: AWS::EC2::KeyPair::KeyName
     Default: cherkavi
 
+# Warning: Don't use quotas/doublequotas for Resources.Type !!!
 Resources:
   ### VPC 
   VPC:

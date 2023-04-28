@@ -2,21 +2,75 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
     Role and LaunchConfiguration for LoadBalancer
-    Don't use quotas/doublequotas for Type !!!
+
+Parameters:
+
+  VpcNetworkMask:
+    Type: String
+    AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
+    MinLength: 9
+    MaxLength: 20
+    Description: vpc network mask 
+    Default: 10.0.0.0/16
 
 Resources:
-
-  Ec2RoleS3:
+  # Role with inline policy 
+  # for EC2, ReadOnly access from S3 
+  Role4EC2allowS3:
     Type: AWS::IAM::Role
     Properties:
+      RoleName: "Ec2S3"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-        - Effect: Allow
-          Action:
-          - s3:Get*
-          - s3:List*
-          - s3-object-lambda:Get*
-          - s3-object-lambda:List*
-          Resource: "*"
+        - Effect: "Allow"
+          Principal:
+            Service: "ec2.amazonaws.com"
+          Action: "sts:AssumeRole"
       Path: "/"
+      Policies:
+        - PolicyName: "S3RO"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: "Allow"
+              Action:
+                - s3:Get*
+                - s3:List*
+              Resource: "arn:aws:s3:::*/*"
+
+  # SecurityGroup
+  # Out:80, In: All
+  SecurityGroupOut80InAll:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http
+      VpcId: !ImportValue vpc-udacity-network-01
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        FromPort: -1
+        ToPort: -1
+        CidrIp: 0.0.0.0/0
+
+  # SecurityGroup
+  # In:80, Out: 80
+  SecurityGroupOut80In80:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http
+      VpcId: !ImportValue VpcName
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: !Ref VpcNetworkMask
