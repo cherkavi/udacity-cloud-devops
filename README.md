@@ -3,8 +3,6 @@
 ## end working session
 ```sh
 ### remove all elements from AWS
-# terminate vpc
-aws ec2 describe-vpcs --query 'Vpcs[].VpcId' --output text | xargs -n 1 aws ec2 delete-vpc --vpc-id
 # delete all cloud-formation stacks
 for stack in $(aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE --query 'StackSummaries[].StackName' --output text); do
     echo "Deleting stack $stack"
@@ -13,6 +11,8 @@ for stack in $(aws cloudformation list-stacks --stack-status-filter CREATE_COMPL
 done
 # delete all database instances
 aws rds describe-db-instances | jq -r '.DBInstances[].DBInstanceIdentifier' | xargs -I {} aws rds delete-db-instance --db-instance-identifier {}
+# terminate vpc
+aws ec2 describe-vpcs --query 'Vpcs[].VpcId' --output text | xargs -n 1 aws ec2 delete-vpc --vpc-id
 
 # delete redschift cluster
 # ToDo
@@ -40,6 +40,12 @@ alias udacity-browser='open_url https://learn.udacity.com/my-programs?tab=Curren
 alias cloudformation-list="aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE --query 'StackSummaries[].StackName'"
 function cloudformation-delete(){ 
     aws cloudformation delete-stack --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION 
+}
+function cloudformation-describe(){ 
+    aws cloudformation describe-stacks --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION
+}
+function cloudformation-validate(){ 
+    aws cloudformation validate-template --template-body $CLOUDFORMATION_TEMPLATE
 }
 ```
 

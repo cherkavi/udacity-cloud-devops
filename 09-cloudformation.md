@@ -90,9 +90,6 @@ aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $AWS
 CLOUDFORMATION_STACK=udacity-permissions-02
 CLOUDFORMATION_TEMPLATE=file://files/cloudformation-role-launchconfig.yaml
 
-# validate cloud formation stack 
-aws cloudformation validate-template --template-body $CLOUDFORMATION_TEMPLATE
-
 cloudformation-delete
 aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION \
 --debug \
@@ -114,10 +111,8 @@ ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 ```
 
 ## Errors
-```
-Template format error: unsupported structure.
-```
+### Template format error: unsupported structure.
 solution:
 > check format of path to file, for example:
 > --template-body file://file-in-current-folder.yaml
-```
+
