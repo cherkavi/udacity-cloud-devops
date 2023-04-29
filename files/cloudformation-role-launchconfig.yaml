@@ -21,6 +21,22 @@ Parameters:
     Description: vpc network mask 
     Default: 10.0.0.0/16
 
+  Ec2KeyPair:
+    Type: String
+    Description: EC2 keypairs
+    Default: cherkavi
+
+  Ec2ImageId:
+    Type: String
+    Description: ami of the machine 
+    # minimal accessible version of Ubuntu 20.04        
+    Default: ami-0aa2b7722dc1b5612
+
+  Ec2InstanceType:
+    Type: String
+    Description: EC2 instance type
+    Default: t2.medium
+
   # Template format error: Every Default member must be a string.
   # VpcId:
   #   Type: String
@@ -107,3 +123,75 @@ Resources:
         FromPort: 80
         ToPort: 80
         CidrIp: !Ref VpcNetworkMask
+
+  # LaunchConfig
+  # Server with inbound port 80
+  LaunchConfigHttp:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: !Ref Ec2ImageId
+      InstanceType: !Ref Ec2InstanceType
+      SecurityGroups:
+        - !Ref SecurityGroupOut80InAll
+      KeyName: !Ref Ec2KeyPair
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          sudo apt-get update -y
+          sudo apt-get install apache2 -y
+          sudo systemctl start apache2.service          
+      BlockDeviceMappings:
+        # root device
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 10
+            VolumeType: gp2          
+
+  TargetGroupHttp:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 15
+      # Timeout must be smaller than Interval
+      HealthCheckTimeoutSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      # should be more or equals 2
+      HealthyThresholdCount: 2
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 3
+      VpcId:
+        Fn::ImportValue: 
+          !Sub "${VpcName}" 
+
+Outputs:
+
+  SecurityGroupOut80InAll:
+    Value: !Ref SecurityGroupOut80InAll
+    Export:
+      Name: !Sub "${VpcName}-SecurityGroupOut80InAll"
+    Description: security group in/80, out/*
+
+  SecurityGroupOut80In80:
+    Value: !Ref SecurityGroupOut80In80
+    Export:
+      Name: !Sub "${VpcName}-SecurityGroupOut80In80"
+    Description: security group in/80, out/80
+
+  Role4EC2allowS3:
+    Value: !Ref Role4EC2allowS3
+    Export:
+      Name: !Sub "${VpcName}-Role4EC2allowS3"
+    Description: Role for EC2, allow read from S3
+
+  TargetGroupHttp:
+    Value: !Ref TargetGroupHttp
+    Export:
+      Name: !Sub "${VpcName}-TargetGroupHttp"
+    Description: for Listener & AutoScaling
+
+  LaunchConfigHttp:
+    Value: !Ref LaunchConfigHttp
+    Export:
+      Name: !Sub "${VpcName}-LaunchConfigHttp"
+    Description: LaunchConfig for AutoScaling

@@ -85,7 +85,7 @@ aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $AWS
  ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 ```
 
-### create iam role, security group
+### create iam role, security group, launch config, target group
 ```sh
 CLOUDFORMATION_STACK=udacity-permissions-02
 CLOUDFORMATION_TEMPLATE=file://files/cloudformation-role-launchconfig.yaml
