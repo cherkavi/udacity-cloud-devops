@@ -99,7 +99,7 @@ ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
 ```
 
 ### create loadbalancer
-
+![LoadBalancer dependencies](https://user-images.githubusercontent.com/8113355/235325676-6de6a5a6-4307-4269-8d74-8d5270b7aed2.png)  
 > next step after: file://files/cloudformation-role-launchconfig.yaml
 ```sh
 CLOUDFORMATION_STACK=udacity-server-01
