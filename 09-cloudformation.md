@@ -98,8 +98,9 @@ ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
 --template-body $CLOUDFORMATION_TEMPLATE --capabilities CAPABILITY_NAMED_IAM
 ```
 
-### create ec2
-> next step after: file://files/cloudformation-vpc-subnets-igw-nat.yaml
+### create loadbalancer
+
+> next step after: file://files/cloudformation-role-launchconfig.yaml
 ```sh
 CLOUDFORMATION_STACK=udacity-server-01
 CLOUDFORMATION_TEMPLATE=file://files/cloudformation-server-security-group.yaml
