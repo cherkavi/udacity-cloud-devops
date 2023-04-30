@@ -69,7 +69,8 @@ my-parameters.json
 ```
 
 ## High load application
-[online diagram of solution](https://online.visual-paradigm.com/w/xqyroxcb/diagrams/#diagram:workspace=xqyroxcb&proj=2&id=33)
+[online diagram of solution](https://online.visual-paradigm.com/w/xqyroxcb/diagrams/#diagram:workspace=xqyroxcb&proj=2&id=33)  
+![final-vision](https://user-images.githubusercontent.com/8113355/235377012-3f575fb0-d732-43f5-858d-c69b2bf259f4.png)  
 
 ### create vpc,subnet,igw,nat
 ```sh
