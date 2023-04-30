@@ -73,28 +73,35 @@ my-parameters.json
 
 ### create vpc,subnet,igw,nat
 ```sh
+PROJECT_PREFIX=udacity-ht-03
 CLOUDFORMATION_STACK=udacity-network-01
 CLOUDFORMATION_TEMPLATE=file://files/cloudformation-vpc-igw-nat.yaml
-aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION  \
+aws cloudformation create-stack \
+--stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION  \
 --template-body $CLOUDFORMATION_TEMPLATE \
---parameters ParameterKey=VpcName,ParameterValue=$CLOUDFORMATION_STACK \
- ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
- ParameterKey=SubnetPublicNetworkMask,ParameterValue=10.0.0.0/24 \
- ParameterKey=SubnetPrivateNetworkMask1,ParameterValue=10.0.1.0/24 \
- ParameterKey=SubnetPrivateNetworkMask2,ParameterValue=10.0.2.0/24 \
- ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
+--parameters \
+  ParameterKey=VpcName,ParameterValue=$PROJECT_PREFIX \
+  ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
+  ParameterKey=SubnetPublicNetworkMask1,ParameterValue=10.0.0.0/24 \
+  ParameterKey=SubnetPublicNetworkMask2,ParameterValue=10.0.1.0/24 \
+  ParameterKey=SubnetPrivateNetworkMask1,ParameterValue=10.0.2.0/24 \
+  ParameterKey=SubnetPrivateNetworkMask2,ParameterValue=10.0.3.0/24 \
+  ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 ```
 
 ### create iam role, security group, launch config, target group
 ```sh
-CLOUDFORMATION_STACK=udacity-permissions-02
+PROJECT_PREFIX=udacity-ht-03
+CLOUDFORMATION_STACK=udacity-permissions-settings-02
 CLOUDFORMATION_TEMPLATE=file://files/cloudformation-role-launchconfig.yaml
 
 cloudformation-delete
-aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION \
---debug \
---parameters ParameterKey=VpcName,ParameterValue=udacity-network-01 \
-ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
+aws cloudformation create-stack \
+--stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION \
+--parameters \
+  ParameterKey=VpcName,ParameterValue=$PROJECT_PREFIX \
+  ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
+  ParameterKey=Ec2InstanceType,ParameterValue='t2.micro' \
 --template-body $CLOUDFORMATION_TEMPLATE --capabilities CAPABILITY_NAMED_IAM
 ```
 
@@ -102,13 +109,18 @@ ParameterKey=VpcNetworkMask,ParameterValue='10.0.0.0/16' \
 ![LoadBalancer dependencies](https://user-images.githubusercontent.com/8113355/235325676-6de6a5a6-4307-4269-8d74-8d5270b7aed2.png)  
 > next step after: file://files/cloudformation-role-launchconfig.yaml
 ```sh
-CLOUDFORMATION_STACK=udacity-server-01
-CLOUDFORMATION_TEMPLATE=file://files/cloudformation-server-security-group.yaml
-aws cloudformation create-stack --stack-name $CLOUDFORMATION_STACK --region $REGION  \
+PROJECT_PREFIX=udacity-ht-03
+CLOUDFORMATION_STACK=udacity-loadbalancer-03
+CLOUDFORMATION_TEMPLATE=file://files/cloudformation-load-balancer.yaml
+
+cloudformation-delete
+aws cloudformation create-stack \
+--stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION \
+--debug \
 --template-body $CLOUDFORMATION_TEMPLATE \
 --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" \
---parameters ParameterKey=StackPrefix,ParameterValue=$CLOUDFORMATION_STACK \
-ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
+--parameters \
+  ParameterKey=VpcName,ParameterValue=$PROJECT_PREFIX  
 ```
 
 ## Errors
@@ -117,3 +129,6 @@ solution:
 > check format of path to file, for example:
 > --template-body file://file-in-current-folder.yaml
 
+
+### if set not existing type: ParameterKey=Ec2InstanceType,ParameterValue='t1.tiny', error will be:
+>  "User: arn:aws:sts::...:assumed-role/...=... is not authorized to perform: autoscaling:CreateLaunchConfiguration on resource: arn:aws:autoscaling:...

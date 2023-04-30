@@ -21,7 +21,7 @@ Parameters:
     Description: vpc network mask 
     Default: 10.0.0.0/16
 
-  SubnetPublicNetworkMask:
+  SubnetPublicNetworkMask1:
     Type: String
     AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
     MinLength: 9
@@ -29,7 +29,7 @@ Parameters:
     Description: vpc network mask 
     Default: 10.0.0.0/24
 
-  SubnetPrivateNetworkMask1:
+  SubnetPublicNetworkMask2:
     Type: String
     AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
     MinLength: 9
@@ -37,13 +37,21 @@ Parameters:
     Description: vpc network mask 
     Default: 10.0.1.0/24
 
+  SubnetPrivateNetworkMask1:
+    Type: String
+    AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
+    MinLength: 9
+    MaxLength: 20
+    Description: vpc network mask 
+    Default: 10.0.2.0/24
+
   SubnetPrivateNetworkMask2:
     Type: String
     AllowedPattern: '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}'
     MinLength: 9
     MaxLength: 20
     Description: vpc network mask 
-    Default: 10.0.1.0/24
+    Default: 10.0.3.0/24
 
   Ec2KeyPairName:
     Description: Name of an existing EC2 KeyPair to enable SSH access into the WordPress web server
@@ -89,11 +97,11 @@ Resources:
 
   ### Public Subnet 
   ## MapPublicIpOnLaunch - true
-  SubnetPublic:
+  SubnetPublic1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: !Ref SubnetPublicNetworkMask
+      CidrBlock: !Ref SubnetPublicNetworkMask1
       AvailabilityZone: !Select 
         - 0
         - !GetAZs 
@@ -101,14 +109,28 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
       - Key: Name
-        Value: !Sub "${VpcName}-subnet-public"
+        Value: !Sub "${VpcName}-subnet-public1"
+
+  SubnetPublic2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref SubnetPublicNetworkMask2
+      AvailabilityZone: !Select 
+        - 1
+        - !GetAZs 
+          Ref: 'AWS::Region'
+      MapPublicIpOnLaunch: true
+      Tags:
+      - Key: Name
+        Value: !Sub "${VpcName}-subnet-public2"
 
   ### NAT
   NAT:
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt EIP.AllocationId
-      SubnetId: !Ref SubnetPublic
+      SubnetId: !Ref SubnetPublic1
       Tags:
       - Key: Name
         Value: !Sub "${VPC}-nat"
@@ -136,7 +158,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       CidrBlock: !Ref SubnetPrivateNetworkMask2
-      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
       MapPublicIpOnLaunch: false
       Tags:
       - Key: Name
@@ -144,25 +166,47 @@ Resources:
 
 
   ### Routetables
-  ## for public network
-  RouteTablePublic:
+  ## for public network 1
+  RouteTablePublic1:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref "VPC"
       Tags:
       - Key: Name
-        Value: !Sub "${VpcName}-routetable-public"
+        Value: !Sub "${VpcName}-routetable-public1"
   # binding RouteTable with Subnet 
-  RT2SubNetPublic:
+  RT2SubNetPublic1:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref RouteTablePublic
-      SubnetId: !Ref SubnetPublic
+      RouteTableId: !Ref RouteTablePublic1
+      SubnetId: !Ref SubnetPublic1
   # Route for RouteTable, connect to IGW
-  Route2Igw:
+  Route2Igw1:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref RouteTablePublic
+      RouteTableId: !Ref RouteTablePublic1
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref InternetGateway
+
+  ## for public network 2
+  RouteTablePublic2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref "VPC"
+      Tags:
+      - Key: Name
+        Value: !Sub "${VpcName}-routetable-public2"
+  # binding RouteTable with Subnet 
+  RT2SubNetPublic2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTablePublic2
+      SubnetId: !Ref SubnetPublic2
+  # Route for RouteTable, connect to IGW
+  Route2Igw2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref RouteTablePublic2
       DestinationCidrBlock: "0.0.0.0/0"
       GatewayId: !Ref InternetGateway
 
@@ -173,7 +217,7 @@ Resources:
       VpcId: !Ref "VPC"
       Tags:
       - Key: Name
-        Value: !Sub '${VpcName}-routetable-private-1'
+        Value: !Sub '${VpcName}-routetable-private1'
   # binding RouteTable with Subnet 
   RT2SubnetPrivate1:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
@@ -195,7 +239,7 @@ Resources:
       VpcId: !Ref "VPC"
       Tags:
       - Key: Name
-        Value: !Sub '${VpcName}-routetable-private-2'
+        Value: !Sub '${VpcName}-routetable-private2'
   # binding RouteTable with Subnet 
   RT2SubnetPrivate2:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
@@ -218,12 +262,17 @@ Outputs:
       # !!! The Name field of Export must not depend on any resources,    
       Name: !Sub "${VpcName}"
 
-  SubnetPublic:
+  SubnetPublic1:
     Description: created public subnet
-    Value: !Ref SubnetPublic
+    Value: !Ref SubnetPublic1
     Export:
-      # !ImportValue vpc-udacity-network-01-subnetpublic
-      Name: !Sub "${VpcName}-subnetpublic"
+      Name: !Sub "${VpcName}-subnetpublic1"
+
+  SubnetPublic2:
+    Description: created public subnet
+    Value: !Ref SubnetPublic2
+    Export:
+      Name: !Sub "${VpcName}-subnetpublic2"
 
   SubnetPrivate1:
     Description: created private subnet 1

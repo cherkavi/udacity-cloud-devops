@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+    LoadBalancer with AutoScaling group
+
+Parameters:
+
+  VpcName:
+    Type: String
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9\-]*'
+    MinLength: 1
+    MaxLength: 25
+    Default: cherkavi
+    Description: prefix for all of elements in Stack
+
+Resources:
+
+  AutoScalingGroupHttp:
+    Type: "AWS::AutoScaling::AutoScalingGroup"
+    Properties:
+      AutoScalingGroupName: !Sub "${VpcName}-AutoScalingGroupHttp"
+      AvailabilityZones: 
+        - !Select [ 0, !GetAZs '' ]
+        - !Select [ 1, !GetAZs '' ]
+      LaunchConfigurationName: 
+        Fn::ImportValue: !Sub "${VpcName}-LaunchConfigHttp"
+      MinSize: 1 # todo: replace
+      MaxSize: 1 # todo: replace
+      DesiredCapacity: 1 # todo: replace
+      TargetGroupARNs:
+        - Fn::ImportValue: !Sub "${VpcName}-TargetGroupHttp"
+      VPCZoneIdentifier:
+        - Fn::ImportValue: !Sub "${VpcName}-subnetprivate1"
+        - Fn::ImportValue: !Sub "${VpcName}-subnetprivate2"
+
+  LoadBalancerHttp:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Subnets:
+        - Fn::ImportValue: !Sub "${VpcName}-subnetpublic1"
+        - Fn::ImportValue: !Sub "${VpcName}-subnetpublic2"
+      SecurityGroups:
+        - Fn::ImportValue: !Sub "${VpcName}-SecurityGroupOut80In80"
+      Type: application
+      IpAddressType: ipv4      
+
+  ListenerHttp:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn: 
+          Fn::ImportValue: !Sub "${VpcName}-TargetGroupHttp"
+      LoadBalancerArn: !Ref LoadBalancerHttp
+      Port: 80
+      Protocol: HTTP
+
+Outputs:
+
+  LoadBalancerHttp:
+    Value: !Sub "http://${LoadBalancerHttp.DNSName}"
+    Export:
+      Name: !Sub "${VpcName}-LoadBalancer-url"      
+    Description: url to loadbalancer
+
+# --------------------------
+# Error:
+# > Launching a new EC2 instance. 
+# > Status Reason: Security group sg-042cd4dc18ed51cf8 and subnet subnet-0acacaa17847ae98d 
+# > belong to different networks. Launching EC2 instance failed.
+# after analysing:
+# > security group and subnets are in different VPC
+# 
+# 
+# need:
+#       VPCZoneIdentifier:
+#         - Fn::ImportValue: !Sub "${VpcName}-subnetprivate1"
+#         - Fn::ImportValue: !Sub "${VpcName}-subnetprivate2"
+# 
+# --------------------------
+# Error:
+# > The availability zones of the specified subnets 
+# > and the Auto Scaling group do not match 
+# > (Service: AmazonAutoScaling; Status Code: 400; Error Code: ValidationError; Request ID: bc5307a1-3b89-4408-9242-530d5ec98c57; Proxy: null)
+# 
+# was:
+#       AvailabilityZones: 
+#         - !Select [ 0, !GetAZs '' ]
+# 
+# need:
+#       AvailabilityZones: 
+#         - !Select [ 0, !GetAZs '' ]
+#         - !Select [ 1, !GetAZs '' ]
+# 
