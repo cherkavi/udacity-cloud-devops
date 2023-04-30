@@ -75,7 +75,6 @@ Resources:
           sudo apt-get update -y
           sudo apt-get install apache2 -y
           sudo systemctl start apache2.service          
-      # ToDo: AMI ID of Ubuntu Linux machine. Too get one, try creating a VM from the web console. 
       ImageId: ami-0747bdcabd34c712a      
       KeyName: !Ref Ec2KeyPair
       SecurityGroups:

@@ -116,7 +116,6 @@ CLOUDFORMATION_TEMPLATE=file://files/cloudformation-load-balancer.yaml
 cloudformation-delete
 aws cloudformation create-stack \
 --stack-name $CLOUDFORMATION_STACK --region $AWS_DEFAULT_REGION \
---debug \
 --template-body $CLOUDFORMATION_TEMPLATE \
 --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" \
 --parameters \

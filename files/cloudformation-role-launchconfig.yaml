@@ -139,6 +139,7 @@ Resources:
           #!/bin/bash
           sudo apt-get update -y
           sudo apt-get install apache2 -y && sudo systemctl start apache2.service          
+          echo "<html> <head><title>Udacity HT-03</title> </head> <body><h1>it works! Udagram, Udacity</h1></body> </html>" > /var/www/html/index.html
       BlockDeviceMappings:
         # root device
         - DeviceName: /dev/xvda
@@ -146,7 +147,6 @@ Resources:
             VolumeSize: 10
             VolumeType: gp2          
       # only one value is possible 
-      # ToDo need to assign role
       # IamInstanceProfile: !Ref Role4EC2allowS3
 
   TargetGroupHttp:
