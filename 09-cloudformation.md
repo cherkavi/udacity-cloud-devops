@@ -106,7 +106,7 @@ aws cloudformation create-stack \
 ```
 
 ### create loadbalancer
-![LoadBalancer dependencies](https://user-images.githubusercontent.com/8113355/235325676-6de6a5a6-4307-4269-8d74-8d5270b7aed2.png)  
+![LoadBalancer dependencies](https://user-images.githubusercontent.com/8113355/235375706-57803dc5-07f9-482c-b858-9cade7e6c1d0.png)
 > next step after: file://files/cloudformation-role-launchconfig.yaml
 ```sh
 PROJECT_PREFIX=udacity-ht-03
