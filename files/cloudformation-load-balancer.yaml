@@ -54,6 +54,36 @@ Resources:
       Port: 80
       Protocol: HTTP
 
+#  # Bastion
+#  SecurityGroupBastion:
+#    Type: AWS::EC2::SecurityGroup
+#    Properties:
+#      GroupName: SecurityGroupBastion
+#      GroupDescription: allow SSH access 
+#      VpcId:
+#        Fn::ImportValue: !Sub "${VpcName}"
+#      SecurityGroupIngress:
+#        - IpProtocol: tcp
+#          FromPort: 22
+#          ToPort: 22
+#          CidrIp: 0.0.0.0/0
+#
+
+#  BastionHost:
+#    Type: AWS::EC2::Instance
+#    Properties:
+#      InstanceType: t3.micro
+#      ImageId: !Ref ImageIdBastion
+#      KeyName: !Ref KeyName
+#      NetworkInterfaces:
+#        - DeviceIndex: 0
+#          AssociatePublicIpAddress: "true"
+#          SubnetId:
+#            Fn::ImportValue: !Sub "${VpcName}-subnetpublic1"
+#          GroupSet:
+#            - !Ref SecurityGroupBastion
+#
+
 Outputs:
 
   LoadBalancerHttp:
