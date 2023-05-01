@@ -69,8 +69,9 @@ my-parameters.json
 ```
 
 ## High load application
-[online diagram of solution](https://online.visual-paradigm.com/w/xqyroxcb/diagrams/#diagram:workspace=xqyroxcb&proj=2&id=33)  
-![final-vision](https://user-images.githubusercontent.com/8113355/235377012-3f575fb0-d732-43f5-858d-c69b2bf259f4.png)  
+* [online diagram of solution](https://online.visual-paradigm.com/w/xqyroxcb/diagrams/#diagram:workspace=xqyroxcb&proj=2&id=33)  
+* ![final-vision](https://user-images.githubusercontent.com/8113355/235377012-3f575fb0-d732-43f5-858d-c69b2bf259f4.png)  
+* [hometask submission](https://review.udacity.com/#!/reviews/4009545)
 
 ### create vpc,subnet,igw,nat
 ```sh
@@ -105,6 +106,8 @@ aws cloudformation create-stack \
   ParameterKey=Ec2InstanceType,ParameterValue='t2.micro' \
 --template-body $CLOUDFORMATION_TEMPLATE --capabilities CAPABILITY_NAMED_IAM
 ```
+
+### [bastion host](https://cloudacademy.com/blog/aws-bastion-host-nat-instances-vpc-peering-security/)
 
 ### create loadbalancer
 ![LoadBalancer dependencies](https://user-images.githubusercontent.com/8113355/235375706-57803dc5-07f9-482c-b858-9cade7e6c1d0.png)
