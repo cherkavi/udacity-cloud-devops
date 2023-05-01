@@ -69,6 +69,14 @@ Resources:
                 - s3:List*
               Resource: "arn:aws:s3:::*/*"
 
+  InstanceProfileRoles:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: InstanceProfileEC2
+      Path: "/"
+      Roles:
+        - !Ref Role4EC2allowS3
+
   # SecurityGroup
   # Out:80, In: All
   SecurityGroupOut80InAll:
@@ -147,7 +155,7 @@ Resources:
             VolumeSize: 10
             VolumeType: gp2          
       # only one value is possible 
-      # IamInstanceProfile: !Ref Role4EC2allowS3
+      IamInstanceProfile: !Ref InstanceProfileRoles
 
   TargetGroupHttp:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
