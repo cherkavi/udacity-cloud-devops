@@ -91,6 +91,8 @@ aws cloudformation create-stack \
   ParameterKey=Ec2KeyPairName,ParameterValue=cherkavi
 ```
 
+![VPC + Subnet + RouteTable + Route + IGW/NAT](https://github.com/cherkavi/udacity-cloud-devops/assets/8113355/7d1d99ea-c426-4988-9e6a-66d84dd59d75)
+
 ### create iam role, security group, launch config, target group
 ```sh
 PROJECT_PREFIX=udacity-ht-03
