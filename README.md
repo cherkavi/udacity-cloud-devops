@@ -94,6 +94,8 @@ mkdir udacity
 git clone https://github.com/udacity/nd9991-c2-Infrastructure-as-Code-v1-Exercises_Solution udacity/nd9991-c2-Infrastructure-as-Code-v1-Exercises_Solution
 
 git clone  https://github.com/udacity/nd9991-c2-Infrastructure-as-Code-v1  udacity/nd9991-c2-Infrastructure-as-Code-v1 
+
+git clone https://github.com/udacity/nd9991-c3-hello-world-exercise-solution
 ```
 
 ## Links
