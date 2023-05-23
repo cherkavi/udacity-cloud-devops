@@ -59,6 +59,14 @@ my-parameters.json
 ]
 ```
 
+### overwrite parameters ( for instance default values )
+```sh
+aws cloudformation deploy --parameter-overrides \
+  Subnets="$SUBNET1,SUBNET2"
+  VpcId=$VPC_ID \
+  InstanceType=$EC2_INSTANCE_TYPE
+```
+
 ### ec2 security group another way of writing full out access
 ```yaml
       SecurityGroupEgress:
