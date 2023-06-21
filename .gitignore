@@ -1,2 +1,4 @@
 key-pairs/*
 udacity/*
+node_modules
+package-lock.json
