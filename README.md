@@ -1,5 +1,6 @@
 # [udacity-cloud-devops](https://learn.udacity.com/my-programs?tab=Currently%2520Learning)
 ## [current budget, balance](https://console.aws.amazon.com/billing/home#/)
+   [balance how to check](https://www.youtube.com/watch?v=r5xhNhmZaAk)
 
 ## end working session
 ```sh
