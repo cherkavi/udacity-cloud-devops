@@ -26,7 +26,7 @@ aws rds describe-db-instances | jq -r '.DBInstances[].DBInstanceIdentifier'
 ```
 
 ## start working session
-bash automatization 
+### bash automatization 
 ```sh
 WORKING_DIR=$HOME_PROJECTS/udacity-cloud-devops
 export AWS_PROFILE=cherkavi-udactity
@@ -50,13 +50,21 @@ function cloudformation-validate(){
 }
 ```
 
+### copy credentials from udacity html modal window
 1. Launch Cloud Gateway, 
 2. select all text in "modal window"
 3. copy
-4. go to Visual Code -> new tab
+4. go to Visual Code -> new tab, paste
 5. ctrl-p 
 6. > macros
 7. udacity credentials
+8. check connection:  
+```sh
+aws ec2 describe-instances
+```
+
+user for previous steps ( IAM ) has Policy: AdministratorAccess
+macros for previous steps:
 ```json
     "macros.list": {
         "udacity credentials ": [
