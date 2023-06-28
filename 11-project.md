@@ -11,8 +11,9 @@
 
 ```sh
 udacity
-cd udacity/hometask
+cd udacity/hometask || { mkdir udacity/hometask; cd udacity/hometask; }
 # git clone https://github.com/cherkavi/udacity-aws-devops-customization.git
+# git remote add bitbucket https://vitalii_cherkashyn@bitbucket.org/udacity-aws-devops-customization
 cd udacity-aws-devops-customization
 
 # $BITBUCKET_PASSWORD
