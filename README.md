@@ -1,6 +1,10 @@
 # [udacity-cloud-devops](https://learn.udacity.com/my-programs?tab=Currently%2520Learning)
 ## [current budget, balance](https://console.aws.amazon.com/billing/home#/)
    [balance how to check](https://www.youtube.com/watch?v=r5xhNhmZaAk)
+## other courses
+* [linux command line basics](https://www.udacity.com/course/linux-command-line-basics--ud595)
+* [basic networking](https://www.udacity.com/course/networking-for-web-developers--ud256)
+* [version control with git](https://www.udacity.com/course/version-control-with-git--ud123)
 
 ## end working session
 ```sh
