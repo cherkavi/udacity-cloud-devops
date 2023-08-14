@@ -1,6 +1,10 @@
 # [udacity-cloud-devops](https://learn.udacity.com/my-programs?tab=Currently%2520Learning)
-## [current budget, balance](https://console.aws.amazon.com/billing/home#/)
-   [balance how to check](https://www.youtube.com/watch?v=r5xhNhmZaAk)
+## balance
+* [current budget, balance](https://console.aws.amazon.com/billing/home#/)
+* [balance how to check](https://www.youtube.com/watch?v=r5xhNhmZaAk)
+## help
+* [mentor support, mentor help](https://knowledge.udacity.com/?nanodegree=nd9991&page=1)
+* [udacity support](https://support.udacity.com/hc/en-us)
 
 ## end working session
 ```sh
