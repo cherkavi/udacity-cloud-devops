@@ -5,6 +5,10 @@
 ## help
 * [mentor support, mentor help](https://knowledge.udacity.com/?nanodegree=nd9991&page=1)
 * [udacity support](https://support.udacity.com/hc/en-us)
+## other courses
+* [linux command line basics](https://www.udacity.com/course/linux-command-line-basics--ud595)
+* [basic networking](https://www.udacity.com/course/networking-for-web-developers--ud256)
+* [version control with git](https://www.udacity.com/course/version-control-with-git--ud123)
 
 ## end working session
 ```sh
