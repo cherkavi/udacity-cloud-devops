@@ -20,8 +20,3 @@ cd udacity-aws-devops-customization
 git pull bitbucket master
 git push bitbucket master
 ```
-
-## circleci
-context: slack-config
-```
-```
