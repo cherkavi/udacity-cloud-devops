@@ -12,7 +12,7 @@
 
 ## end working session
 ```sh
-### remove all elements from AWS
+### remove all elements from AWS, remove resources, free up resources, shutdown resources
 # delete all cloud-formation stacks
 for stack in $(aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE --query 'StackSummaries[].StackName' --output text); do
     echo "Deleting stack $stack"
@@ -23,6 +23,8 @@ done
 aws rds describe-db-instances | jq -r '.DBInstances[].DBInstanceIdentifier' | xargs -I {} aws rds delete-db-instance --db-instance-identifier {}
 # terminate vpc
 aws ec2 describe-vpcs --query 'Vpcs[].VpcId' --output text | xargs -n 1 aws ec2 delete-vpc --vpc-id
+# terminate ec2
+aws ec2 describe-instances --query "Reservations[].Instances[].{State:State.Name, InstanceId:InstanceId, Name:Tags[?Key=='Name'] | [0].Value, InstanceType:InstanceType, PrivateIpAddress:PrivateIpAddress, PublicIpAddress:PublicIpAddress}" --output table
 
 # delete redschift cluster
 # ToDo
@@ -30,6 +32,8 @@ aws ec2 describe-vpcs --query 'Vpcs[].VpcId' --output text | xargs -n 1 aws ec2 
 ### ------------------------------------------------------
 ### check for empty output
 aws ec2 describe-vpcs --query 'Vpcs[].VpcId' --output text
+aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].{State:State.Name,InstanceId:InstanceId, Name:Tags[?Key=='Name'] | [0].Value, InstanceType:InstanceType, PrivateIpAddress:PrivateIpAddress, PublicIpAddress:PublicIpAddress}" --output table
+
 aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE UPDATE_COMPLETE --query 'StackSummaries[].StackName'
 aws rds describe-db-instances | jq -r '.DBInstances[].DBInstanceIdentifier'
 ```
