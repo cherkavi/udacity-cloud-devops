@@ -44,7 +44,10 @@ rm bucket-policy.json
 
 aws s3api get-bucket-policy --bucket $AWS_BUCKET_NAME --output json
 
+# aws s3 website s3://$AWS_BUCKET_NAME/ --index-document index.html
+
 # check public access to bucket 
+# https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteEndpoints.html
 x-www-browser https://$AWS_BUCKET_NAME.s3.amazonaws.com/index.html
 ```
 
