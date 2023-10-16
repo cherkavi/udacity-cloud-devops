@@ -4,10 +4,15 @@
 # create bucket 
 AWS_BUCKET_NAME="my-bucket-name" 
 aws s3 mb s3://$AWS_BUCKET_NAME
-# put public-read-write
-aws s3api put-bucket-acl --bucket $AWS_BUCKET_NAME --acl public-read-write
 # list buckets
 aws s3api list-buckets
+
+# put public-read-write
+aws s3api put-bucket-acl --bucket $AWS_BUCKET_NAME --acl public-read-write
+# An error occurred (AccessDenied) when calling the PutBucketAcl operation: Access Denied
+# Starting in April 2023, all Block Public Access settings are enabled by default for new buckets.
+aws s3api put-public-access-block --profile $AWS_PROFILE  --bucket $AWS_BUCKET_NAME  --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
+aws s3api get-public-access-block --profile $AWS_PROFILE  --bucket $AWS_BUCKET_NAME 
 ```
 
 ## upload files
