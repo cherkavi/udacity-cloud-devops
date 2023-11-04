@@ -14,6 +14,9 @@ aws s3api put-bucket-acl --bucket $AWS_BUCKET_NAME --acl public-read-write
 aws s3api put-public-access-block --profile $AWS_PROFILE  --bucket $AWS_BUCKET_NAME  --public-access-block-configuration BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false
 aws s3api get-public-access-block --profile $AWS_PROFILE  --bucket $AWS_BUCKET_NAME 
 ```
+if you are using some Domain provider:
+1. Remove all A records in your domain (usually it is 404 or something similar).
+2. Add a CNAME to point to the S3 Bucket
 
 ## upload files
 ```sh
